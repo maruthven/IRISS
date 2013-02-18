@@ -3,7 +3,7 @@ import roslib; roslib.load_manifest('teleop_twist_keyboard')
 import rospy
 
 from geometry_msgs.msg import Twist
-from time import sleep
+import time
 
 import sys, select, termios, tty
 
@@ -66,7 +66,7 @@ if __name__=="__main__":
 	th = 0
 	status = 0
 	key = '['
-	time = System.time()
+	time = time.time()
 
 
 	try:
@@ -102,6 +102,7 @@ if __name__=="__main__":
 							twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
 							twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = turn
 							pub.publish(twist)
+							time=time.time()
 			
 	#	SLEEP(5)
 	#	wait(3000)#Assuming we can find a function that waits for 1 ms interval
