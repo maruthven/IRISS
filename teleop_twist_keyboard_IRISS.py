@@ -3,7 +3,7 @@ import roslib; roslib.load_manifest('teleop_twist_keyboard')
 import rospy
 
 from geometry_msgs.msg import Twist
-from time import sleep
+import time
 
 import sys, select, termios, tty
 
@@ -66,7 +66,7 @@ if __name__=="__main__":
 	th = 0
 	status = 0
 	key = '['
-	time = System.time()
+	time = time.time()
 
 
 	try:
@@ -95,6 +95,7 @@ if __name__=="__main__":
 						twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = th*turn
 						pub.publish(twist)
 
+						time = time.time()
 						while(time + 5 > System.time()):
 							print msg
 							print vels(speed,turn)
