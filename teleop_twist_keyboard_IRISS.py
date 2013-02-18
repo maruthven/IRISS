@@ -24,14 +24,14 @@ CTRL-C to quit
 """
 
 moveBindings = {
-		'i':(1,0,1),
-		'o':(1,-1,1),
-		'j':(0,1,1),
-		'l':(0,-1,1),
-		'u':(1,1,1),
-		',':(-1,0,1),
-		'.':(-1,1,1),
-		'm':(-1,-1,1),
+		'i':(1,0),
+		'o':(1,-1),
+		'j':(0,1),
+		'l':(0,-1),
+		'u':(1,1),
+		',':(-1,0),
+		'.':(-1,1),
+		'm':(-1,-1),
 	       }
 
 speedBindings={
@@ -66,45 +66,72 @@ if __name__=="__main__":
 	th = 0
 	status = 0
 	key = '['
-
+	time = System.time()
 
 
 	try:
-		print msg
-		print vels(speed,turn)
-		twist = Twist()
-	       	twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
-       		twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = turn
-	       	pub.publish(twist)
-		SLEEP(5)
+		while(1):
+			while(key != '='):
+				key = getKey()
+				if key in moveBindings.keys():
+					x = moveBindings[key][0]
+					th = moveBindings[key][1]
+				elif key in speedBindings.keys():
+					speed = speed * speedBindings[key][0]
+					turn = turn * speedBindings[key][1]
+
+					print vels(speed,turn)
+					if (status == 14):
+						print msg
+						status = (status + 1) % 15
+					else:
+						x = 0
+						th = 0
+						if (key == '\x03'):
+							break
+
+						twist = Twist()
+						twist.linear.x = x*speed; twist.linear.y = 0; twist.linear.z = 0
+						twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = th*turn
+						pub.publish(twist)
+
+						while(time + 5 > System.time()):
+							print msg
+							print vels(speed,turn)
+							twist = Twist()
+							twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
+							twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = turn
+							pub.publish(twist)
+			
+	#	SLEEP(5)
 	#	wait(3000)#Assuming we can find a function that waits for 1 ms interval
 	       	twist = Twist()
 		twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
 	       	twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
 	       	pub.publish(twist)
 		while(1):
-	#		key = getKey()
-	#		if key in moveBindings.keys():
-	#			x = moveBindings[key][0]
-	#			th = moveBindings[key][1]
-	#		elif key in speedBindings.keys():
-	#			speed = speed * speedBindings[key][0]
-	#			turn = turn * speedBindings[key][1]
+			key = getKey()
+			if key in moveBindings.keys():
+				x = moveBindings[key][0]
+				th = moveBindings[key][1]
+			elif key in speedBindings.keys():
+				speed = speed * speedBindings[key][0]
+				turn = turn * speedBindings[key][1]
 
-	#			print vels(speed,turn)
-	#			if (status == 14):
-	#				print msg
-	#			status = (status + 1) % 15
-	#		else:
-	#			x = 0
-	#			th = 0
-	#			if (key == '\x03'):
-	#				break
+				print vels(speed,turn)
+				if (status == 14):
+					print msg
+				status = (status + 1) % 15
+			else:
+				x = 0
+				th = 0
+				if (key == '\x03'):
+					break
 
-	#		twist = Twist()
-	#		twist.linear.x = x*speed; twist.linear.y = 0; twist.linear.z = 0
-	#		twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = th*turn
-	#		pub.publish(twist)
+			twist = Twist()
+			twist.linear.x = x*speed; twist.linear.y = 0; twist.linear.z = 0
+			twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = th*turn
+			pub.publish(twist)
 
 	except:
 		print e
