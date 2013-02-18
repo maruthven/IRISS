@@ -95,6 +95,7 @@ if __name__=="__main__":
 						twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = th*turn
 						pub.publish(twist)
 
+						time = time.time()
 						while(time + 5 > System.time()):
 							print msg
 							print vels(speed,turn)
