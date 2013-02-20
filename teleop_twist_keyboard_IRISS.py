@@ -95,14 +95,14 @@ if __name__=="__main__":
 						twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = th*turn
 						pub.publish(twist)
 
-						while(time + 5 > System.time()):
-							print msg
-							print vels(speed,turn)
-							twist = Twist()
-							twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
-							twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = turn
-							pub.publish(twist)
-							time=time.time()
+		       	while(time + 5 > time.time()):
+		       	       	print msg
+		       	       	print vels(speed,turn)
+		       	       	twist = Twist()
+		      	       	twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
+	      	       	       	twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = turn
+	      	       	       	pub.publish(twist)
+	       	       	       	time=time.time()
 			
 	#	SLEEP(5)
 	#	wait(3000)#Assuming we can find a function that waits for 1 ms interval
