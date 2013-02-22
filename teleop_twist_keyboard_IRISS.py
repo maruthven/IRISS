@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import roslib; roslib.load_manifest('teleop_twist_keyboard')
 import rospy
+from rospy import timer
 
 from geometry_msgs.msg import Twist
-import time
 
 import sys, select, termios, tty
 
@@ -66,14 +66,14 @@ if __name__=="__main__":
 	th = 0
 	status = 0
 	key = '['
-	time = time.time()
-
+#	time = time.time()
+	random = 0
 
 	try:
-		while(1):
+		while(key != 'c'):
 			while(key != '='):
 				key = getKey()
-				print "Input Recieved"
+				print "Input Recieved"+key
 				if key in moveBindings.keys():
 					x = moveBindings[key][0]
 					th = moveBindings[key][1]
@@ -95,23 +95,41 @@ if __name__=="__main__":
 						twist.linear.x = x*speed; twist.linear.y = 0; twist.linear.z = 0
 						twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = th*turn
 						pub.publish(twist)
-			time=time.time()
+#			time=time.time()
 			speed=.10
 			turn=.05
-			while(time + 5 > time.time()):
-				print msg
-				print vels(speed,turn)
-				twist = Twist()
-				twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
-				twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = turn
-				pub.publish(twist)
-				time.sleep(.5)
+			time = 0
+			#random = 0
+			while(key != '-'):
+			#	print msg
+				if (key == '\x03'):
+					break
+				else:
+					print vels(speed,turn)
+					twist = Twist()
+					twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
+					twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = turn
+					pub.publish(twist)
+					#timer.sleep(1)
+					key = getKey()
+				
+
+			twist = Twist()
+			twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
+			twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
+			pub.publish(twist)
+			print "Finished first round"
+			if (key == '\x03'):
+				break
 			
 	#	SLEEP(5)
 	#	wait(3000)#Assuming we can find a function that waits for 1 ms interval
 
 	except:
+		print random
+		print time
 		print e
+		
 
 	finally:
 		twist = Twist()
