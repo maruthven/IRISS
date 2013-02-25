@@ -50,6 +50,13 @@ def getKey():
 	termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
 	return key
 
+def keyNoBlock():
+	tty.setraw(sys.stdin.fileno())
+	select.select([sys.stdin],[], [], 0.1)
+	key = sys.stdin.read(1)
+	termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
+	return key
+
 speed = .5
 turn = 0.05
 
@@ -64,16 +71,18 @@ if __name__=="__main__":
 
 	x = 0
 	th = 0
-	status = 0
+	status = 14
 	key = '['
 #	time = time.time()
 	random = 0
 
 	try:
-		while(key != 'c'):
-			while(key != '='):
+		print msg
+		print vels(speed, turn)
+		while(key != '\x03'):
+			while(key != '=' and key != '\x03'):
 				key = getKey()
-				print "Input Recieved"+key
+				print "Input Recieved: "+key
 				if key in moveBindings.keys():
 					x = moveBindings[key][0]
 					th = moveBindings[key][1]
@@ -82,25 +91,27 @@ if __name__=="__main__":
 					turn = turn * speedBindings[key][1]
 
 					print vels(speed,turn)
+				
 					if (status == 14):
 						print msg
-						status = (status + 1) % 15
-					else:
-						x = 0
-						th = 0
-						if (key == '\x03'):
-							break
+					status = (status + 1) % 15
+				else:
+					x = 0
+					th = 0
+					if (key == '\x03'):
+						break
+					
+				twist = Twist()
+				twist.linear.x = x*speed; twist.linear.y = 0; twist.linear.z = 0
+				twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = th*turn
+				pub.publish(twist)
 
-						twist = Twist()
-						twist.linear.x = x*speed; twist.linear.y = 0; twist.linear.z = 0
-						twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = th*turn
-						pub.publish(twist)
 #			time=time.time()
 			speed=.10
 			turn=.05
 			time = 0
 			#random = 0
-			while(key != '-'):
+			while(key != '-' and key != '\x03'):
 			#	print msg
 				if (key == '\x03'):
 					break
@@ -111,7 +122,7 @@ if __name__=="__main__":
 					twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = turn
 					pub.publish(twist)
 					#timer.sleep(1)
-					key = getKey()
+					key = keyNoBlock()
 				
 
 			twist = Twist()
