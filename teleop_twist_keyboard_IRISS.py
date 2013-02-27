@@ -121,17 +121,17 @@ if __name__=="__main__":
 			newtime = time
 			print "beginning loop"
 			#while(key != '-' and key != '\x03'):
-			while(time < 5 and key != '\x03'):
+			while(time < 80 and key != '\x03'):
 			#	print msg
 				if (key == '\x03'):
 					break
 				else:
-					print vels(speed,turn)
+					print "turn "+i
 					twist = Twist()
 					twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
 					twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = turn
 					pub.publish(twist)
-					timer.sleep(1)
+					timer.sleep(.8)
 					time = time +1
 					#newtime = rospy.get_rostime()	
 				
