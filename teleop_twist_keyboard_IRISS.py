@@ -4,7 +4,7 @@ import rospy
 from rospy import timer
 
 from geometry_msgs.msg import Twist
-
+import subprocess
 import sys, select, termios, tty
 
 msg = """
@@ -51,14 +51,19 @@ def getKey():
 	return key
 
 def keyNoBlock():
-	tty.setraw(sys.stdin.fileno())
-	select.select([sys.stdin],[], [], 0.1)
+	tty.setcbreak(sys.stdin.fileno())
+	select.select([sys.stdin],[], [], 1)
+	#if(s == sys.stdin):
+	#	global globalKey = sys.stdin.read(1)
+	#	return true
 	key = sys.stdin.read(1)
 	termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
+
 	return key
 
 speed = .5
 turn = 0.05
+globalKey = '['
 
 def vels(speed,turn):
 	return "currently:\tspeed %s\tturn %s " % (speed,turn)
@@ -73,7 +78,8 @@ if __name__=="__main__":
 	th = 0
 	status = 14
 	key = '['
-#	time = time.time()
+	time = rospy.get_rostime()
+	print rospy.get_rostime()
 	random = 0
 
 	try:
@@ -111,7 +117,11 @@ if __name__=="__main__":
 			turn=.05
 			time = 0
 			#random = 0
-			while(key != '-' and key != '\x03'):
+			#time = rospy.get_rostime()
+			newtime = time
+			print "beginning loop"
+			#while(key != '-' and key != '\x03'):
+			while(time < 5 and key != '\x03'):
 			#	print msg
 				if (key == '\x03'):
 					break
@@ -121,9 +131,11 @@ if __name__=="__main__":
 					twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
 					twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = turn
 					pub.publish(twist)
-					#timer.sleep(1)
-					key = keyNoBlock()
+					timer.sleep(1)
+					time = time +1
+					#newtime = rospy.get_rostime()	
 				
+			print "loop ended"
 
 			twist = Twist()
 			twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
@@ -132,6 +144,8 @@ if __name__=="__main__":
 			print "Finished first round"
 			if (key == '\x03'):
 				break
+			else:
+				key = ' '
 			
 	#	SLEEP(5)
 	#	wait(3000)#Assuming we can find a function that waits for 1 ms interval
